@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Rnd } from "react-rnd";
 import Panel from "./Panel";
 import { type CanvasAreaProps } from "../types";
@@ -13,10 +13,32 @@ const CanvasArea: React.FC<CanvasAreaProps> = ({
   onDeleteLayer,
   onResetAll,
 }) => {
-  const handleDeselect = () => onSelectLayer(null);
+  const canvasRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        canvasRef.current &&
+        !canvasRef.current.contains(event.target as Node)
+      ) {
+        onSelectLayer(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [onSelectLayer]);
+
+  const handleCanvasClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
+      onSelectLayer(null);
+    }
+  };
 
   return (
-    <div onClick={handleDeselect}>
+    <div>
       <Panel
         title="canvas"
         headerColor="#fadb14"
@@ -29,8 +51,19 @@ const CanvasArea: React.FC<CanvasAreaProps> = ({
                 style={{ marginLeft: 8, color: "red" }}
                 onClick={(e) => {
                   e.stopPropagation();
-                  onDeleteLayer(selectedId);
-                  onSelectLayer(null);
+                  e.preventDefault();
+
+                  console.log("selectedId", selectedId);
+                  console.log(
+                    "layers",
+                    layers.map((l) => l.id)
+                  );
+
+                  const currentId = selectedId;
+                  if (currentId) {
+                    onDeleteLayer(currentId);
+                    setTimeout(() => onSelectLayer(null), 0);
+                  }
                 }}
               >
                 Delete
@@ -40,8 +73,9 @@ const CanvasArea: React.FC<CanvasAreaProps> = ({
         }
       >
         <div
+          ref={canvasRef}
           id="canvas-area"
-          onClick={(e) => e.stopPropagation()}
+          onClick={handleCanvasClick}
           style={{
             position: "relative",
             width: 500,
@@ -60,6 +94,7 @@ const CanvasArea: React.FC<CanvasAreaProps> = ({
             return (
               <Rnd
                 key={layer.id}
+                bounds="parent"
                 size={{
                   width: layer.width || 100,
                   height: layer.height || 100,
