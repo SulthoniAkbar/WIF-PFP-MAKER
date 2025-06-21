@@ -1,0 +1,175 @@
+import React, { useState } from "react";
+import { BACKGROUNDS, AVATARS, ACCESSORY_CATEGORIES } from "./constant/assets";
+import CanvasArea from "./components/CanvasArea";
+import BackgroundPanel from "./components/BackgroundPanel";
+import AvatarPanel from "./components/AvatarPanel";
+import AccessoryPanel from "./components/AccessoryPanel";
+import UploadPanel from "./components/UploadPanel";
+import DownloadButton from "./components/DownloadButton";
+import type { Layer } from "./types";
+
+const App: React.FC = () => {
+  const [backgroundImage, setBackgroundImage] = useState<string>("");
+  const [backgroundColor, setBackgroundColor] = useState<string>("#ffffff");
+  const [layers, setLayers] = useState<Layer[]>([]);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  const handleBackgroundImageSelect = (src: string) => {
+    setBackgroundImage(src);
+    setSelectedId(null);
+  };
+  const handleBackgroundColorSelect = (hex: string) => {
+    setBackgroundColor(hex);
+    setSelectedId(null);
+  };
+
+  const addLayer = (src: string) => {
+    setLayers((prev) => [
+      ...prev,
+      {
+        id: Date.now().toString(),
+        src,
+        width: 100,
+        height: 100,
+        rotation: 0,
+        x: 10,
+        y: 10,
+      },
+    ]);
+  };
+
+  const resetCanvas = () => {
+    setLayers([]);
+    setBackgroundImage("");
+    setBackgroundColor("#ffffff");
+    setSelectedId(null);
+  };
+  const resetBackground = () => {
+    setBackgroundImage("");
+    setBackgroundColor("#ffffff");
+  };
+  const resetAvatars = () =>
+    setLayers((prev) => prev.filter((l) => !AVATARS.includes(l.src)));
+  const resetAccessories = () => {
+    const allAccessorySrcs = Object.values(ACCESSORY_CATEGORIES).flat();
+    setLayers((prev) => prev.filter((l) => !allAccessorySrcs.includes(l.src)));
+  };
+
+  const updateLayer = (id: string, props: Partial<Layer>) => {
+    setLayers((prev) =>
+      prev.map((l) => (l.id === id ? { ...l, ...props } : l))
+    );
+  };
+
+  const deleteLayer = (id: string) => {
+    setLayers((prev) => prev.filter((l) => l.id !== id));
+  };
+
+  return (
+    <div style={{ padding: 20, maxWidth: 1200, margin: "0 auto" }}>
+      <h1 style={{ textAlign: "center", fontSize: 40, marginBottom: 16 }}>
+        WIF PFP MAKER
+      </h1>
+      <div
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          gap: 16,
+          justifyContent: "center",
+        }}
+      >
+        <CanvasArea
+          backgroundImage={backgroundImage}
+          backgroundColor={backgroundColor}
+          layers={layers}
+          selectedId={selectedId}
+          onSelectLayer={setSelectedId}
+          onUpdateLayer={updateLayer}
+          onDeleteLayer={deleteLayer}
+          onResetAll={resetCanvas}
+        />
+        <div style={{ flex: 1 }}>
+          <BackgroundPanel
+            images={BACKGROUNDS}
+            onSelectImage={handleBackgroundImageSelect}
+            onSelectColor={handleBackgroundColorSelect}
+            selectedColor={backgroundColor}
+            onReset={resetBackground}
+          />
+          <AvatarPanel
+            images={AVATARS}
+            onSelect={addLayer}
+            onReset={resetAvatars}
+          />
+          <AccessoryPanel onSelect={addLayer} onReset={resetAccessories} />
+          <UploadPanel onUpload={addLayer} />
+
+          <div
+            style={{
+              marginTop: 16,
+              display: "flex",
+              flexDirection: "column",
+              gap: 8,
+            }}
+          >
+            <DownloadButton />
+            {selectedId && (
+              <div style={{ textAlign: "center" }}>
+                <label>
+                  Width:
+                  <input
+                    type="range"
+                    min={20}
+                    max={500}
+                    value={
+                      layers.find((l) => l.id === selectedId)?.width || 100
+                    }
+                    onChange={(e) =>
+                      updateLayer(selectedId, {
+                        width: parseInt(e.target.value),
+                      })
+                    }
+                  />
+                </label>
+                <label>
+                  Height:
+                  <input
+                    type="range"
+                    min={20}
+                    max={500}
+                    value={
+                      layers.find((l) => l.id === selectedId)?.height || 100
+                    }
+                    onChange={(e) =>
+                      updateLayer(selectedId, {
+                        height: parseInt(e.target.value),
+                      })
+                    }
+                  />
+                </label>
+                <label>
+                  Rotate:
+                  <input
+                    type="range"
+                    min={0}
+                    max={360}
+                    value={
+                      layers.find((l) => l.id === selectedId)?.rotation || 0
+                    }
+                    onChange={(e) =>
+                      updateLayer(selectedId, {
+                        rotation: parseInt(e.target.value),
+                      })
+                    }
+                  />
+                </label>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default App;
