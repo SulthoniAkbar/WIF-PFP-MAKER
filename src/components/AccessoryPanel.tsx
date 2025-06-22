@@ -29,7 +29,9 @@ const AccessoryPanel: React.FC<Omit<ItemPanelProps, "images">> = ({
       }
     >
       <div style={{ display: "flex", flexDirection: "column" }}>
+        {/* Tab bar */}
         <div
+          className="accessory-tabs"
           style={{
             display: "flex",
             justifyContent: "center",
@@ -57,6 +59,7 @@ const AccessoryPanel: React.FC<Omit<ItemPanelProps, "images">> = ({
           ))}
         </div>
 
+        {/* Content */}
         <div
           style={{
             display: "flex",

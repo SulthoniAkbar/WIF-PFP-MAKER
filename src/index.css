@@ -216,4 +216,20 @@ body {
   .layer-selected {
     border: 1px dashed #00f;
   }
+  .accessory-tabs {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    gap: 12px !important;
+    padding: 12px 4px !important;
+    background-color: #ffffff !important;
+  }
+
+  /* Pastikan tiap <span> tidak ter-wrap */
+  .accessory-tabs span {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    cursor: pointer;
+  }
 }
