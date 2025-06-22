@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { BACKGROUNDS, AVATARS, ACCESSORY_CATEGORIES } from "./constant/assets";
 import CanvasArea from "./components/CanvasArea";
 import BackgroundPanel from "./components/BackgroundPanel";
@@ -13,18 +13,29 @@ const App: React.FC = () => {
   const [backgroundColor, setBackgroundColor] = useState<string>("#ffffff");
   const [layers, setLayers] = useState<Layer[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [canvasSize, setCanvasSize] = useState<number>(500);
 
-  const canvasWidth =
-    typeof window !== "undefined" && window.innerWidth <= 768
-      ? window.innerWidth - 24
-      : 500;
-  const canvasHeight = 500;
   const layerMargin = 20;
+
+  // Dynamically update canvas size based on screen width
+  useEffect(() => {
+    const updateCanvasSize = () => {
+      const isMobile = window.innerWidth <= 768;
+      const size = isMobile ? window.innerWidth - 24 : 500;
+      setCanvasSize(size);
+    };
+
+    updateCanvasSize(); // Initial call
+    window.addEventListener("resize", updateCanvasSize);
+
+    return () => window.removeEventListener("resize", updateCanvasSize);
+  }, []);
 
   const handleBackgroundImageSelect = (src: string) => {
     setBackgroundImage(src);
     setSelectedId(null);
   };
+
   const handleBackgroundColorSelect = (hex: string) => {
     setBackgroundColor(hex);
     setSelectedId(null);
@@ -36,8 +47,8 @@ const App: React.FC = () => {
       {
         id: Date.now().toString(),
         src,
-        width: canvasWidth - layerMargin * 2,
-        height: canvasHeight - layerMargin * 2,
+        width: canvasSize - layerMargin * 2,
+        height: canvasSize - layerMargin * 2,
         rotation: 0,
         x: layerMargin,
         y: layerMargin,
@@ -51,12 +62,15 @@ const App: React.FC = () => {
     setBackgroundColor("#ffffff");
     setSelectedId(null);
   };
+
   const resetBackground = () => {
     setBackgroundImage("");
     setBackgroundColor("#ffffff");
   };
+
   const resetAvatars = () =>
     setLayers((prev) => prev.filter((l) => !AVATARS.includes(l.src)));
+
   const resetAccessories = () => {
     const allAccessorySrcs = Object.values(ACCESSORY_CATEGORIES).flat();
     setLayers((prev) => prev.filter((l) => !allAccessorySrcs.includes(l.src)));
@@ -94,6 +108,8 @@ const App: React.FC = () => {
           onUpdateLayer={updateLayer}
           onDeleteLayer={deleteLayer}
           onResetAll={resetCanvas}
+          width={canvasSize}
+          height={canvasSize}
         />
         <div style={{ flex: 1 }}>
           <BackgroundPanel
@@ -127,7 +143,7 @@ const App: React.FC = () => {
                   <input
                     type="range"
                     min={20}
-                    max={500}
+                    max={canvasSize}
                     value={
                       layers.find((l) => l.id === selectedId)?.width || 100
                     }
@@ -143,7 +159,7 @@ const App: React.FC = () => {
                   <input
                     type="range"
                     min={20}
-                    max={500}
+                    max={canvasSize}
                     value={
                       layers.find((l) => l.id === selectedId)?.height || 100
                     }

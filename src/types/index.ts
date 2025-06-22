@@ -19,6 +19,10 @@ export interface CanvasAreaProps {
   onUpdateLayer: (id: string, props: Partial<Layer>) => void;
   onDeleteLayer: (id: string) => void;
   onResetAll: () => void;
+
+  // Tambahkan ini:
+  width: number;
+  height: number;
 }
 
 export interface PanelProps {
