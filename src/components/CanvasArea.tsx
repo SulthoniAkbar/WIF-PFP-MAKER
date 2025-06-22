@@ -14,10 +14,8 @@ const CanvasArea: React.FC<CanvasAreaProps> = ({
   onResetAll,
 }) => {
   const canvasRef = useRef<HTMLDivElement>(null);
-
   const isMobile = typeof window !== "undefined" && window.innerWidth <= 768;
-  const canvasWidth = isMobile ? window.innerWidth - 24 : 500;
-  const canvasHeight = 500;
+  const size = isMobile ? window.innerWidth - 24 : 500;
 
   return (
     <div>
@@ -53,8 +51,8 @@ const CanvasArea: React.FC<CanvasAreaProps> = ({
           }}
           style={{
             position: "relative",
-            width: canvasWidth,
-            height: canvasHeight,
+            width: size,
+            height: size,
             margin: "0 auto",
             backgroundColor,
             backgroundImage: backgroundImage
@@ -67,9 +65,8 @@ const CanvasArea: React.FC<CanvasAreaProps> = ({
         >
           {layers.map((layer) => {
             const isSelected = layer.id === selectedId;
-
-            const width = layer.width ?? canvasWidth;
-            const height = layer.height ?? canvasHeight;
+            const width = layer.width ?? size;
+            const height = layer.height ?? size;
             const x = layer.x ?? 0;
             const y = layer.y ?? 0;
 
@@ -80,6 +77,7 @@ const CanvasArea: React.FC<CanvasAreaProps> = ({
                 size={{ width, height }}
                 position={{ x, y }}
                 enableResizing={isSelected}
+                disableDragging={!isSelected}
                 onDragStop={(_, d) =>
                   onUpdateLayer(layer.id, { x: d.x, y: d.y })
                 }
@@ -98,6 +96,7 @@ const CanvasArea: React.FC<CanvasAreaProps> = ({
                 style={{
                   zIndex: isSelected ? 2 : 1,
                   border: isSelected ? "1px dashed #00f" : "none",
+                  touchAction: "none",
                 }}
               >
                 <img
