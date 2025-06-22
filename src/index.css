@@ -55,10 +55,165 @@ body {
 }
 
 @media (max-width: 768px) {
-  .window {
-    margin: 8px;
+  body {
+    background: #f472b6;
+    padding: 0 12px;
+    overflow-x: hidden;
   }
+
+  h1 {
+    font-size: 1.75rem;
+    text-align: center;
+    margin: 20px 0;
+  }
+
+  .window {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-bottom: 24px;
+    border: 2px solid #000;
+  }
+
+  .window-header {
+    padding: 6px 10px;
+    font-size: 0.9rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .window-controls {
+    gap: 4px;
+  }
+
+  .control-btn {
+    width: 10px;
+    height: 10px;
+  }
+
   .window-body {
+    padding: 12px;
+    display: flex;
     flex-direction: column;
+    gap: 12px;
+  }
+
+  #canvas-area {
+    width: 100%;
+    max-width: 360px;
+    aspect-ratio: 1 / 1;
+    margin: 0 auto;
+    background-size: cover;
+    background-position: center;
+    border: 2px solid #000;
+  }
+
+  .thumbnail {
+    width: 64px;
+    height: 64px;
+  }
+
+  input[type="range"] {
+    width: 100%;
+    margin: 6px 0;
+  }
+
+  input[type="color"] {
+    width: 32px;
+    height: 32px;
+    border: none;
+  }
+
+  label {
+    font-size: 0.75rem;
+    text-align: center;
+  }
+
+  /* Accessories tab wrap */
+  .window-body > div:first-child {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .window-body > div:first-child span {
+    font-size: 13px;
+    padding: 4px 8px;
+    white-space: nowrap;
+    border-bottom: 1px solid transparent;
+  }
+
+  .window-body > div:first-child span.active {
+    font-weight: bold;
+    color: red;
+    border-color: red;
+  }
+
+  /* Upload file input styling */
+  input[type="file"] {
+    width: 100%;
+    font-size: 0.85rem;
+    padding: 8px;
+    border: 1px solid #000;
+    background: #fff;
+    margin-top: 4px;
+  }
+
+  /* Download section clean up */
+  .window-body p {
+    font-size: 1rem;
+    text-align: center;
+    margin-bottom: 8px;
+  }
+
+  .window-body .download-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .window-body .download-buttons button {
+    font-size: 1rem;
+    padding: 8px 16px;
+    min-width: 100px;
+    border: 1px solid #000;
+    background: #fff;
+    cursor: pointer;
+  }
+  html,
+  body {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
+  body {
+    padding: 0 12px;
+    background: #f472b6;
+  }
+
+  .window,
+  .window-body,
+  .window-header,
+  .thumbnail,
+  #canvas-area,
+  input,
+  button,
+  img,
+  label,
+  div {
+    max-width: 100% !important;
+    box-sizing: border-box;
+  }
+
+  .window-body > div:first-child {
+    flex-wrap: wrap;
+    justify-content: center;
+    overflow-x: hidden;
+  }
+  .layer-selected {
+    border: 1px dashed #00f;
   }
 }

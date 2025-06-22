@@ -14,6 +14,13 @@ const App: React.FC = () => {
   const [layers, setLayers] = useState<Layer[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
+  const canvasWidth =
+    typeof window !== "undefined" && window.innerWidth <= 768
+      ? window.innerWidth - 24
+      : 500;
+  const canvasHeight = 500;
+  const layerMargin = 20;
+
   const handleBackgroundImageSelect = (src: string) => {
     setBackgroundImage(src);
     setSelectedId(null);
@@ -29,11 +36,11 @@ const App: React.FC = () => {
       {
         id: Date.now().toString(),
         src,
-        width: 100,
-        height: 100,
+        width: canvasWidth - layerMargin * 2,
+        height: canvasHeight - layerMargin * 2,
         rotation: 0,
-        x: 10,
-        y: 10,
+        x: layerMargin,
+        y: layerMargin,
       },
     ]);
   };

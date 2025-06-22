@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import { Rnd } from "react-rnd";
 import Panel from "./Panel";
 import { type CanvasAreaProps } from "../types";
@@ -15,27 +15,9 @@ const CanvasArea: React.FC<CanvasAreaProps> = ({
 }) => {
   const canvasRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        canvasRef.current &&
-        !canvasRef.current.contains(event.target as Node)
-      ) {
-        onSelectLayer(null);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [onSelectLayer]);
-
-  const handleCanvasClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === e.currentTarget) {
-      onSelectLayer(null);
-    }
-  };
+  const isMobile = typeof window !== "undefined" && window.innerWidth <= 768;
+  const canvasWidth = isMobile ? window.innerWidth - 24 : 500;
+  const canvasHeight = 500;
 
   return (
     <div>
@@ -51,19 +33,8 @@ const CanvasArea: React.FC<CanvasAreaProps> = ({
                 style={{ marginLeft: 8, color: "red" }}
                 onClick={(e) => {
                   e.stopPropagation();
-                  e.preventDefault();
-
-                  console.log("selectedId", selectedId);
-                  console.log(
-                    "layers",
-                    layers.map((l) => l.id)
-                  );
-
-                  const currentId = selectedId;
-                  if (currentId) {
-                    onDeleteLayer(currentId);
-                    setTimeout(() => onSelectLayer(null), 0);
-                  }
+                  onDeleteLayer(selectedId);
+                  onSelectLayer(null);
                 }}
               >
                 Delete
@@ -75,11 +46,16 @@ const CanvasArea: React.FC<CanvasAreaProps> = ({
         <div
           ref={canvasRef}
           id="canvas-area"
-          onClick={handleCanvasClick}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              onSelectLayer(null);
+            }
+          }}
           style={{
             position: "relative",
-            width: 500,
-            height: 500,
+            width: canvasWidth,
+            height: canvasHeight,
+            margin: "0 auto",
             backgroundColor,
             backgroundImage: backgroundImage
               ? `url(${backgroundImage})`
@@ -91,15 +67,18 @@ const CanvasArea: React.FC<CanvasAreaProps> = ({
         >
           {layers.map((layer) => {
             const isSelected = layer.id === selectedId;
+
+            const width = layer.width ?? canvasWidth;
+            const height = layer.height ?? canvasHeight;
+            const x = layer.x ?? 0;
+            const y = layer.y ?? 0;
+
             return (
               <Rnd
                 key={layer.id}
                 bounds="parent"
-                size={{
-                  width: layer.width || 100,
-                  height: layer.height || 100,
-                }}
-                position={{ x: layer.x || 10, y: layer.y || 10 }}
+                size={{ width, height }}
+                position={{ x, y }}
                 enableResizing={isSelected}
                 onDragStop={(_, d) =>
                   onUpdateLayer(layer.id, { x: d.x, y: d.y })
